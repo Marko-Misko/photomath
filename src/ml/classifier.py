@@ -1,4 +1,5 @@
 import os
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -122,11 +123,12 @@ class TensorflowClassifier:
 
 # Train classifier
 if __name__ == '__main__':
+    classifier_name = sys.argv[1]
     data_dir = os.path.abspath(os.path.join(__file__, '../../../data/processed'))
     dl = DatasetLoader(data_dir)
     train_ds, test_ds = dl.load_data()
     model = TensorflowClassifier()
-    model_save_dir = os.path.abspath(os.path.join(__file__, '../../../models/classifier'))
+    model_save_dir = os.path.abspath(os.path.join(__file__, f'../../../models/{classifier_name}'))
     model.train(train_ds, test_ds, model_save_dir)
-    metrics_save_dir = os.path.abspath(os.path.join(__file__, '../../../metrics/classifier'))
+    metrics_save_dir = os.path.abspath(os.path.join(__file__, '../../../metrics/{classifier_name}'))
     model.get_metrics(metrics_save_dir)

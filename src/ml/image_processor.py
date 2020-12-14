@@ -1,11 +1,11 @@
 import os
+import sys
 from typing import Tuple, Union
 
 import cv2 as cv
 import numpy as np
 
 from src.ml.classifier import TensorflowClassifier
-from src.ml.data import DatasetLoader
 from src.ml.detector import OpenCVDetector
 from src.ml.solver import StackSolver, StackSolverException
 
@@ -60,23 +60,21 @@ class Photomath:
         return expression, result
 
     @staticmethod
-    def create_vanilla_photomath():
+    def create_vanilla_photomath(classifier_name: str ='classifier'):
         """
         Factory method for creating simple photomath from basic components.
 
+        :param classifier_name: folder name where the model is saved
         :return: photomath instance
         """
         detector = OpenCVDetector()
-        models_dir = os.path.abspath(os.path.join(__file__, '../../../models/classifier'))
+        models_dir = os.path.abspath(os.path.join(__file__, f'../../../models/{classifier_name}'))
         if os.listdir(models_dir):
             classifier = TensorflowClassifier()
-            classifier.load_trained_weights(os.path.abspath(os.path.join(__file__, '../../../models/classifier')))
+            classifier.load_trained_weights(
+                os.path.abspath(os.path.join(__file__, f'../../../models/{classifier_name}')))
         else:
-            dataloader = DatasetLoader(os.path.abspath(os.path.join(__file__, '../../../data/processed')))
-            train_ds, test_ds = dataloader.load_data()
-            classifier = TensorflowClassifier()
-            classifier.train(train_ds, test_ds)
-            classifier.get_metrics(os.path.abspath(os.path.join(__file__, '../../../metrics/classifier')))
+            sys.exit(1)
         solver = StackSolver()
         photomath = Photomath(detector, classifier, solver)
         return photomath
@@ -84,8 +82,10 @@ class Photomath:
 
 # Image processor test
 if __name__ == '__main__':
-    photomath = Photomath.create_vanilla_photomath()
-    img = cv.imread(os.path.abspath(os.path.join(__file__, '../../../test/images/test_2.jpg')))
+    classifier_name = sys.argv[1]
+    path_to_image = sys.argv[2]
+    photomath = Photomath.create_vanilla_photomath(classifier_name)
+    img = cv.imread(path_to_image)
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     expr, result = photomath.process_photo(img)
     print(f'Expression read is {expr} and the result is: {result}')

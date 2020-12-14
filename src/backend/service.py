@@ -4,7 +4,7 @@ from flask import (
     Blueprint, request, abort, render_template
 )
 
-from backend import ALLOWED_EXTENSIONS
+from src.backend import ALLOWED_EXTENSIONS
 from src.ml.image_processor import Photomath
 
 bp = Blueprint('service', __name__)
