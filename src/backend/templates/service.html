@@ -1,0 +1,19 @@
+<!doctype html>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<html>
+<body>
+<h1 style="text-align:center;">Provide photo of math problem for solving...</h1>
+<div style="text-align:center; vertical-align:middle">
+    <form method="post" enctype=multipart/form-data>
+        <label for="image">Image</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <input type="submit" value="Solve">
+    </form>
+</div>
+{% if solution %}
+<h1 style="text-align:center;">Solution is {{ solution }} </h1>
+{% endif %}
+</body>
+</html>

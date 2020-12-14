@@ -1,0 +1,32 @@
+html {
+  font-family: sans-serif;
+  background: darkseagreen;
+  padding: 2rem;
+}
+
+body {
+  max-width: 960px;
+  margin: 0 auto;
+  background: white;
+}
+
+h1, div, form {
+  font-family: serif;
+  color: darkolivegreen;
+  margin: 1rem 0;
+  flex: auto;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0.5rem;
+}
+
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
+}

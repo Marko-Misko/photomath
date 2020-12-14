@@ -1,6 +1,6 @@
 import pytest
 
-from solver import StackSolver
+from ml.solver import StackSolver
 
 
 @pytest.fixture

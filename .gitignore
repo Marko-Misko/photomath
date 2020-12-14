@@ -1,3 +1,9 @@
 .idea/
 
 venv/
+
+data/
+models/
+
+.pytest_cache/
+.ipynb_checkpoints/
