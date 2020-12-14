@@ -38,3 +38,9 @@ from Tensorflow to train a digit & operator classifier, which will then save thi
 
 `data/processed` directory should therefore contain images of operators and parentheses, because the
 rest of the data (digits) is borrowed from MNIST.
+
+As far as the problems concerned, the biggest one is for sure similarities between 1 and / which causes
+most confusion to model. 
+Improvements should be to increase dataset size, use data augmentation and maybe even to consider introducing 
+another model, or some heuristics in order to determine if the model should consider classifying 
+object as either 1 or /.
