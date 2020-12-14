@@ -44,3 +44,10 @@ most confusion to model.
 Improvements should be to increase dataset size, use data augmentation and maybe even to consider introducing 
 another model, or some heuristics in order to determine if the model should consider classifying 
 object as either 1 or /.
+
+## Metrics comment
+The accuracy plot does not show signs of overfitting, and the loss plot backs that that up,
+so the training seems to be done well.
+We could have gone for the confusion matrix to see which classes are falsely classified the most
+and which one are most correct which is to say we could have calculated precision and recall for 
+each of the classes.
