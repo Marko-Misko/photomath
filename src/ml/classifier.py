@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
 
-from ml.data import DatasetLoader
+from src.ml.data import DatasetLoader
 
 
 class TensorflowClassifier:
@@ -120,11 +120,13 @@ class TensorflowClassifier:
         plt.savefig(save_dir, bbox_inches='tight')
 
 
+# Train classifier
 if __name__ == '__main__':
-    data_dir = os.path.abspath('../../data/processed')
+    data_dir = os.path.abspath(os.path.join(__file__, '../../../data/processed'))
     dl = DatasetLoader(data_dir)
-    model = TensorflowClassifier(dl)
-    model_save_dir = os.path.abspath('../../models/classifier')
-    model.train(model_save_dir)
-    metrics_save_dir = os.path.abspath('../../metrics/classifier')
+    train_ds, test_ds = dl.load_data()
+    model = TensorflowClassifier()
+    model_save_dir = os.path.abspath(os.path.join(__file__, '../../../models/classifier'))
+    model.train(train_ds, test_ds, model_save_dir)
+    metrics_save_dir = os.path.abspath(os.path.join(__file__, '../../../metrics/classifier'))
     model.get_metrics(metrics_save_dir)

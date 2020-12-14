@@ -7,7 +7,7 @@ import numpy as np
 from src.ml.classifier import TensorflowClassifier
 from src.ml.data import DatasetLoader
 from src.ml.detector import OpenCVDetector
-from src.ml.solver import StackSolver
+from src.ml.solver import StackSolver, StackSolverException
 
 
 class Photomath:
@@ -54,33 +54,38 @@ class Photomath:
 
         try:
             result = self.solver.solve(expression)
-        except ValueError as err:
-            return expression, str(err)
-        except Exception as err:
+        except StackSolverException as err:
             return expression, str(err)
 
         return expression, result
 
+    @staticmethod
+    def create_vanilla_photomath():
+        """
+        Factory method for creating simple photomath from basic components.
 
-def create_photomath():
-    detector = OpenCVDetector()
-    if os.listdir(os.path.abspath(os.path.join(__file__, '../../../models/classifier'))):
-        classifier = TensorflowClassifier()
-        classifier.load_trained_weights(os.path.abspath(os.path.join(__file__, '../../../models/classifier')))
-    else:
-        dataloader = DatasetLoader(os.path.abspath(os.path.join(__file__, '../../../data/processed')))
-        train_ds, test_ds = dataloader.load_data()
-        classifier = TensorflowClassifier()
-        classifier.train(train_ds, test_ds)
-        classifier.get_metrics(os.path.abspath(os.path.join(__file__, '../../../metrics/classifier')))
-    solver = StackSolver()
-    photomath = Photomath(detector, classifier, solver)
-    return photomath
+        :return: photomath instance
+        """
+        detector = OpenCVDetector()
+        models_dir = os.path.abspath(os.path.join(__file__, '../../../models/classifier'))
+        if os.listdir(models_dir):
+            classifier = TensorflowClassifier()
+            classifier.load_trained_weights(os.path.abspath(os.path.join(__file__, '../../../models/classifier')))
+        else:
+            dataloader = DatasetLoader(os.path.abspath(os.path.join(__file__, '../../../data/processed')))
+            train_ds, test_ds = dataloader.load_data()
+            classifier = TensorflowClassifier()
+            classifier.train(train_ds, test_ds)
+            classifier.get_metrics(os.path.abspath(os.path.join(__file__, '../../../metrics/classifier')))
+        solver = StackSolver()
+        photomath = Photomath(detector, classifier, solver)
+        return photomath
 
 
+# Image processor test
 if __name__ == '__main__':
-    photomath = create_photomath()
-    img = cv.imread(os.path.join(__file__, '../../test/images/test_2.jpg'))
+    photomath = Photomath.create_vanilla_photomath()
+    img = cv.imread(os.path.abspath(os.path.join(__file__, '../../../test/images/test_2.jpg')))
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     expr, result = photomath.process_photo(img)
     print(f'Expression read is {expr} and the result is: {result}')

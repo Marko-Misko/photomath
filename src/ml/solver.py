@@ -38,6 +38,7 @@ class StackSolver:
                     self.calculate_currently_on_stacks()
                 self._operators.append(token)
             else:
+                # It's a whitespace
                 pass
 
             i += 1
@@ -52,20 +53,33 @@ class StackSolver:
         Calculates the result of next operation, implicitly given by the states
         of internal stack structures.
         """
-        op = self._operators.pop()
-        b = self._values.pop()
-        a = self._values.pop()
+        try:
+            op = self._operators.pop()
+            b = self._values.pop()
+            a = self._values.pop()
+        except IndexError as err:
+            raise StackSolverException('Expression is not valid')
         value = apply_operator(op, a, b)
         self._values.append(value)
 
 
-def apply_operator(op: str, a: int, b: int) -> int:
+class StackSolverException(Exception):
+    """
+    Raise when solver can't solve mathematical expression.
     """
 
-    :param op:
-    :param a:
-    :param b:
-    :return:
+
+def apply_operator(op: str, a: int, b: int) -> int:
+    """
+    Applies mathematical operation denoted as `op` to the arguments
+    `a` and `b`.
+
+    :param op: operator
+    :param a: first operand
+    :param b: second operand
+    :return: result of operation
+
+    :raises InvalidArgumentError: if operation is division by zero
     """
     operators = {
         '+': lambda x, y: x + y,
@@ -76,11 +90,19 @@ def apply_operator(op: str, a: int, b: int) -> int:
     try:
         result = operators[op](a, b)
     except ZeroDivisionError:
-        raise ValueError('Expression is not mathematically correct. There is division with zero.')
+        raise StackSolverException('Expression is not mathematically correct. There is division with zero.')
     return result
 
 
 def has_precedence(op1, op2):
+    """
+    Determines which operator has higher priority: parentheses first,
+    then multiplication and division, addition and subtraction last.
+
+    :param op1: first operator
+    :param op2: second operator
+    :return: True if `op1` has higher precedence than `op2`
+    """
     if op2 == '(' or op2 == ')':
         return False
     elif (op1 == '*' or op1 == '/') and (op2 == '+' or op2 == '-'):
@@ -90,13 +112,27 @@ def has_precedence(op1, op2):
 
 
 def check_if_only_digits_and_operators(expression: str):
+    """
+    Raises ValueError if `expression` is not made only from allowed symbols.
+
+    :param expression:
+    :raises InvalidArgumentError: if there are illegal symbols in expression
+    """
     allowed_symbols = "1234567890()+-*/ "
     for token in expression:
         if token not in allowed_symbols:
-            raise ValueError('There are symbols which are not allowed.')
+            raise StackSolverException('There are symbols which are not allowed.')
 
 
 def check_if_parentheses_are_valid(expression: str):
+    """
+    Validates if parentheses are in valid order, which means there must be
+    equal number of opening and closing operators and that every opening parentheses
+    must have its closing parentheses.
+
+    :param expression: 
+    :raises: StackSolverException: if parentheses are not valid
+    """
     validity_counter = 0
     for token in expression:
         if token == '(':
@@ -104,7 +140,7 @@ def check_if_parentheses_are_valid(expression: str):
         if token == ')':
             validity_counter -= 1
         if validity_counter < 0:
-            raise ValueError('Invalid parentheses. It looks there are opening parentheses missing.')
+            raise StackSolverException('Invalid parentheses. It looks there are opening parentheses missing.')
 
     if validity_counter != 0:
-        raise ValueError('Invalid parentheses. Number of parentheses is not equal')
+        raise StackSolverException('Invalid parentheses. Number of parentheses is not equal')
